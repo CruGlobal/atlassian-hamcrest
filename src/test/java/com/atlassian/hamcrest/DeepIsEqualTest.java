@@ -2,21 +2,28 @@ package com.atlassian.hamcrest;
 
 import static com.atlassian.hamcrest.DeepIsEqual.deeplyEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.Test;
 
 import com.atlassian.hamcrest.DeepIsEqualPrimitiveFieldsTest.AllPrimitives;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DeepIsEqualTest
 {
     private static final Simple ONE = new Simple(1, "One");
     private static final Simple COPY_OF_ONE = new Simple(1, "One");
     private static final Simple TWO = new Simple(2, "Two");
+    private static final Simple THREE = new Simple(3, "Three");
     private static final Simple COPY_OF_TWO = new Simple(2, "Two");
     
     private static final StringsHolder HELLO_WORLD = new StringsHolder("Hello", "World");
@@ -110,6 +117,158 @@ public class DeepIsEqualTest
         assertThat(s1, is(not(deeplyEqualTo(s2))));
     }
 
+
+
+    @Test
+    public void assertThatDeepIsEqualWithSetMatcherDoesMatchesSetOfCompositeObjects()
+    {
+        SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, TWO);
+        SimpletonSetHolder s2 = new SimpletonSetHolder(TWO, ONE);
+        assertThat(s1, isDeeplyEqualToHandlingSets(s2));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithSetMatcherDoesNotMatchSetOfCompositeObjectsWhenSizeDoesNotMatch()
+    {
+        SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, TWO);
+        SimpletonSetHolder s2 = new SimpletonSetHolder(TWO);
+        assertThat(s1, is(not(isDeeplyEqualToHandlingSets(s2))));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithSetMatcherDoesNotMatchSetOfCompositeObjectsWhenSizeMatchesButAMatcherDoesNotMatchAndAnElementIsUnmatched()
+    {
+        SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, TWO);
+        SimpletonSetHolder s2 = new SimpletonSetHolder(TWO, THREE);
+        assertThat(s1, is(not(isDeeplyEqualToHandlingSets(s2))));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithSetMatcherDoesNotMatchSetOfCompositeObjectsWhenSizeMatchesAndAllElementsAreMatchedButAMatcherDoesNotMatch()
+    {
+        SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, COPY_OF_ONE);
+        SimpletonSetHolder s2 = new SimpletonSetHolder(ONE, TWO);
+
+        assertThat(s1, is(not(isDeeplyEqualToHandlingSets(s2))));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithSetMatcherDoesNotMatchSetOfCompositeObjectsWhenSizeMatchesAndAMatcherDoesNotMatchButAllElementsAreMatched()
+    {
+        SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, TWO);
+        SimpletonSetHolder s2 = new SimpletonSetHolder(ONE, COPY_OF_ONE);
+
+        assertThat(s1, is(not(isDeeplyEqualToHandlingSets(s2))));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithSetMatcherDescribesMimsatchOfSetOfCompositeObjectsWhenSizeDoesNotMatch()
+    {
+        SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, TWO);
+        SimpletonSetHolder s2 = new SimpletonSetHolder(TWO);
+
+        Description description = new StringDescription();
+        is(isDeeplyEqualToHandlingSets(s2)).describeMismatch(s1, description);
+        assertThat(description.toString(), is(equalTo("{simpletons size should be 1, but is <2>}")));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithSetMatcherDescribesMimsatchOfSetOfCompositeObjectsWhenSizeMatchesButAMatcherDoesNotMatchAndAnElementIsUnmatched()
+    {
+        SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, TWO);
+        SimpletonSetHolder s2 = new SimpletonSetHolder(TWO, THREE);
+
+        Description description = new StringDescription();
+        is(isDeeplyEqualToHandlingSets(s2)).describeMismatch(s1, description);
+        assertThat(description.toString(), containsString("simpletons does not match these: [{number is <3>, name is \"Three\"}], and it contains these unmatched elements: "));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithSetMatcherDescribesMimsatchOfSetOfCompositeObjectsWhenSizeMatchesAndAllElementsAreMatchedButAMatcherDoesNotMatch()
+    {
+        SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, COPY_OF_ONE);
+        SimpletonSetHolder s2 = new SimpletonSetHolder(ONE, TWO);
+
+        Description description = new StringDescription();
+        is(isDeeplyEqualToHandlingSets(s2)).describeMismatch(s1, description);
+        assertThat(description.toString(), containsString("simpletons does not match these: [{number is <2>, name is \"Two\"}]"));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithSetMatcherDescribesMimsatchOfSetOfCompositeObjectsWhenSizeMatchesAndAMatcherDoesNotMatchButAllElementsAreMatched()
+    {
+        SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, TWO);
+        SimpletonSetHolder s2 = new SimpletonSetHolder(ONE, COPY_OF_ONE);
+
+        Description description = new StringDescription();
+        is(isDeeplyEqualToHandlingSets(s2)).describeMismatch(s1, description);
+        assertThat(description.toString(), containsString("simpletons contains these unmatched elements: "));
+    }
+
+
+    private <T> Matcher<? super T> isDeeplyEqualToHandlingSets(T s2) {
+        return deeplyEqualTo(s2, ImmutableMap.of(
+                ClassMatchers.isAssignableTo(Set.class), MatcherFactories.setIsDeeplyEqual()));
+    }
+
+
+
+    @Test
+    public void assertThatDeepIsEqualWithListMatcherDoesMatchListOfCompositeObjects()
+    {
+        SimpletonListHolder s1 = new SimpletonListHolder(ONE, TWO);
+        SimpletonListHolder s2 = new SimpletonListHolder(ONE, TWO);
+        assertThat(s1, isDeeplyEqualToHandlingLists(s2));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithListMatcherDoesNotMatchListOfCompositeObjectsWhenSizeDoesNotMatch()
+    {
+        SimpletonListHolder s1 = new SimpletonListHolder(ONE, TWO);
+        SimpletonListHolder s2 = new SimpletonListHolder(ONE);
+
+        assertThat(s1, is(not(isDeeplyEqualToHandlingLists(s2))));
+    }
+
+
+    @Test
+    public void assertThatDeepIsEqualWithListMatcherDoesNotMatchListOfCompositeObjectsWhenSizeMatchesButAMatcherDoesNotMatch()
+    {
+        SimpletonListHolder s1 = new SimpletonListHolder(ONE, TWO);
+        SimpletonListHolder s2 = new SimpletonListHolder(ONE, THREE);
+
+        assertThat(s1, is(not(isDeeplyEqualToHandlingLists(s2))));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithListMatcherDescribesMimsatchOfSetOfCompositeObjectsWhenSizeDoesNotMatch()
+    {
+        SimpletonListHolder s1 = new SimpletonListHolder(ONE, TWO);
+        SimpletonListHolder s2 = new SimpletonListHolder(TWO);
+
+        Description description = new StringDescription();
+        is(isDeeplyEqualToHandlingLists(s2)).describeMismatch(s1, description);
+        assertThat(description.toString(), is(equalTo("{simpletons size should be 1, but is <2>}")));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithListMatcherDescribesMimsatchOfListOfCompositeObjectsWhenSizeMatchesButAMatcherDoesNotMatch()
+    {
+        SimpletonListHolder s1 = new SimpletonListHolder(ONE, TWO);
+        SimpletonListHolder s2 = new SimpletonListHolder(ONE, THREE);
+
+        Description description = new StringDescription();
+        is(isDeeplyEqualToHandlingLists(s2)).describeMismatch(s1, description);
+        assertThat(description.toString(), is(equalTo("{simpletons [[<1>] => {number was <2>, name was \"Two\"}]}")));
+    }
+
+
+    private <T> Matcher<? super T> isDeeplyEqualToHandlingLists(T s2) {
+        return deeplyEqualTo(s2, ImmutableMap.of(
+                ClassMatchers.isAssignableTo(List.class), MatcherFactories.listIsDeeplyEqual()));
+    }
+
+
     @Test
     public void assertThatDeepIsEqualMatchesCompositeObjects()
     {
@@ -152,7 +311,7 @@ public class DeepIsEqualTest
         Cyclic cyclic2 = new Cyclic(4);
         cyclic2.cycle = cyclic2;
         assertThat(cyclic2, is(not(deeplyEqualTo(cyclic1))));
-    }
+     }
 
     static class Cyclic
     {
@@ -215,6 +374,26 @@ public class DeepIsEqualTest
         public SimpletonsHolder(Simple... simpletons)
         {
             this.simpletons = simpletons;
+        }
+    }
+
+    static class SimpletonSetHolder
+    {
+        final Set<Simple> simpletons;
+
+        public SimpletonSetHolder(Simple... simpletons)
+        {
+            this.simpletons = ImmutableSet.copyOf(Arrays.asList(simpletons));
+        }
+    }
+
+    static class SimpletonListHolder
+    {
+        final List<Simple> simpletons;
+
+        public SimpletonListHolder(Simple... simpletons)
+        {
+            this.simpletons = ImmutableList.copyOf(Arrays.asList(simpletons));
         }
     }
     
