@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.atlassian.pom</groupId>
-        <artifactId>atlassian-public-pom</artifactId>
-        <version>18</version>
-    </parent>
-    <groupId>com.atlassian.hamcrest</groupId>
+
+    <groupId>org.ccci</groupId>
     <artifactId>atlassian-hamcrest</artifactId>
     <version>1.1-SNAPSHOT</version>
     <name>Atlassian Hamcrest</name>
-    <description>Library containing useful Hamcrest Matchers.</description>
+    <description>Library containing useful Hamcrest Matchers.  Forked from https://labs.atlassian.com/svn/AHAM/trunk rev 3110.</description>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
@@ -32,12 +28,7 @@
     </dependencies>
     
     <properties>
-        <jdkLevel>1.5</jdkLevel>
+        <jdkLevel>1.6</jdkLevel>
     </properties>
 
-    <scm>
-        <connection>scm:svn:https://labs.atlassian.com/svn/AHAM/tags/atlassian-hamcrest-1.0.beta1</connection>
-        <developerConnection>scm:svn:https://labs.atlassian.com/svn/AHAM/tags/atlassian-hamcrest-1.0.beta1</developerConnection>
-        <url>https://labs.atlassian.com/source/browse/AHAM/tags/atlassian-hamcrest-1.0.beta1</url>
-    </scm>
 </project>
