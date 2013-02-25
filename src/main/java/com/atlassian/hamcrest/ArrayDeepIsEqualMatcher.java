@@ -46,10 +46,25 @@ class ArrayDeepIsEqualMatcher<T> extends DiagnosingMatcher<T>
     @Override
     protected boolean matches(Object actual, Description mismatchDescription)
     {
+        if (actual == null)
+        {
+            mismatchDescription.appendText("is null");
+            return false;
+        }
+
+
+        if (! actual.getClass().isArray())
+        {
+            mismatchDescription.appendText("not an array, but a ")
+                    .appendText(actual.getClass().getName());
+            return false;
+        }
         if (expectedSize != Array.getLength(actual))
         {
-            // TODO can we do something better? try and figure out missing elements and their position maybe?
-            describeTo(mismatchDescription);
+            mismatchDescription.appendText("size should be ")
+                    .appendText(String.valueOf(expectedSize))
+                    .appendText(", but is ")
+                    .appendValue(Array.getLength(actual));
             return false;
         }
         boolean mismatchFound = false;
