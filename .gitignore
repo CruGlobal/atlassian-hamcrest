@@ -4,3 +4,5 @@ atlassian-hamcrest.ipr
 atlassian-hamcrest.iws
 .clover
 .svn
+.idea
+
