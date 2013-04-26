@@ -212,6 +212,185 @@ public class DeepIsEqualTest
     }
 
 
+    @Test
+    public void assertThatDeepIsEqualWithMapMatcherDoesMatchesSetOfCompositeObjects()
+    {
+        SimpletonMapHolder s1 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put("one", ONE)
+                .put("two", TWO)
+        );
+        SimpletonMapHolder s2 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put("two", TWO)
+                .put("one", ONE)
+        );
+        assertThat(s1, isDeeplyEqualToHandlingMaps(s2));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithMapMatcherDoesNotMatchMapOfCompositeObjectsWhenSizeDoesNotMatch()
+    {
+        SimpletonMapHolder s1 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put("one", ONE)
+                .put("two", TWO)
+        );
+        SimpletonMapHolder s2 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put("two", TWO)
+        );
+        assertThat(s1, is(not(isDeeplyEqualToHandlingMaps(s2))));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithMapMatcherDoesNotMatchMapOfCompositeObjectsWhenSizeMatchesButAMatcherDoesNotMatchAndAnElementIsUnmatched()
+    {
+        SimpletonMapHolder s1 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put("one", ONE)
+                .put("two", TWO)
+        );
+        SimpletonMapHolder s2 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put("two", TWO)
+                .put("three", THREE)
+        );
+        assertThat(s1, is(not(isDeeplyEqualToHandlingMaps(s2))));
+    }
+
+
+    @Test
+    public void assertThatDeepIsEqualWithMapMatcherDoesNotMatchMapOfCompositeObjectsWhenSizeMatchesAndKeysMatchButAValueMatcherDoesNotMatchAndAnValueIsUnmatched()
+    {
+        SimpletonMapHolder s1 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put(ONE, ONE)
+                .put(TWO, TWO)
+        );
+        SimpletonMapHolder s2 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put(ONE, ONE)
+                .put(TWO, THREE)
+        );
+        assertThat(s1, is(not(isDeeplyEqualToHandlingMaps(s2))));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithMapMatcherDoesNotMatchMapOfCompositeObjectsWhenSizeMatchesAndAllElementsAreMatchedButAMatcherDoesNotMatch()
+    {
+        SimpletonMapHolder s1 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put(ONE, ONE)
+                .put(COPY_OF_ONE, COPY_OF_ONE)
+        );
+        SimpletonMapHolder s2 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put(ONE, ONE)
+                .put(TWO, TWO)
+        );
+
+        assertThat(s1, is(not(isDeeplyEqualToHandlingMaps(s2))));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithMapMatcherDoesNotMatchMapOfCompositeObjectsWhenSizeMatchesAndAMatcherDoesNotMatchButAllElementsAreMatched()
+    {
+        SimpletonMapHolder s1 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put(ONE, ONE)
+                .put(TWO, TWO)
+        );
+        SimpletonMapHolder s2 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put(ONE, ONE)
+                .put(COPY_OF_ONE, COPY_OF_ONE)
+        );
+
+        assertThat(s1, is(not(isDeeplyEqualToHandlingMaps(s2))));
+    }
+
+
+    @Test
+    public void assertThatDeepIsEqualWithMapMatcherDescribesMimsatchOfMapOfCompositeObjectsWhenSizeDoesNotMatch()
+    {
+        SimpletonMapHolder s1 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put("one", ONE)
+                .put("two", TWO)
+        );
+        SimpletonMapHolder s2 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put("two", TWO)
+        );
+
+        Description description = new StringDescription();
+        is(isDeeplyEqualToHandlingMaps(s2)).describeMismatch(s1, description);
+        assertThat(description.toString(), is(equalTo("{simpletons size should be 1, but is <2>}")));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithMapMatcherDescribesMimsatchOfMapOfCompositeObjectsWhenSizeMatchesButAMatcherDoesNotMatchAndAnElementIsUnmatched()
+    {
+        SimpletonMapHolder s1 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put("one", ONE)
+                .put("two", TWO)
+        );
+        SimpletonMapHolder s2 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put("two", TWO)
+                .put("three", THREE)
+        );
+
+        Description description = new StringDescription();
+        is(isDeeplyEqualToHandlingMaps(s2)).describeMismatch(s1, description);
+        assertThat(description.toString(), containsString("simpletons does not match these: [key: is \"three\"; value: {number is <3>, name is \"Three\"}], and it contains these unmatched elements: [one="));
+    }
+
+
+    @Test
+    public void assertThatDeepIsEqualWithMapMatcherDescribesMismatchOfMapOfCompositeObjectsWhenSizeMatchesAndKeysMatchButAValueMatcherDoesNotMatchAndAnValueIsUnmatched()
+    {
+        SimpletonMapHolder s1 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put(ONE, ONE)
+                .put(TWO, TWO)
+        );
+        SimpletonMapHolder s2 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put(ONE, ONE)
+                .put(TWO, THREE)
+        );
+
+        Description description = new StringDescription();
+        is(isDeeplyEqualToHandlingMaps(s2)).describeMismatch(s1, description);
+        assertThat(description.toString(), containsString("simpletons does not match these: [key: {number is <2>, name is \"Two\"}; value: {number is <3>, name is \"Three\"}], and it contains these unmatched elements: ["));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithMapMatcherDescribesMimsatchOfMapOfCompositeObjectsWhenSizeMatchesAndAllElementsAreMatchedButAMatcherDoesNotMatch()
+    {
+
+        SimpletonMapHolder s1 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put(ONE, ONE)
+                .put(COPY_OF_ONE, COPY_OF_ONE)
+        );
+        SimpletonMapHolder s2 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put(ONE, ONE)
+                .put(TWO, TWO)
+        );
+
+        Description description = new StringDescription();
+        is(isDeeplyEqualToHandlingMaps(s2)).describeMismatch(s1, description);
+        assertThat(description.toString(), containsString("simpletons does not match these: [key: {number is <2>, name is \"Two\"}; value: {number is <2>, name is \"Two\"}]"));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithMapMatcherDescribesMimsatchOfMapOfCompositeObjectsWhenSizeMatchesAndAMatcherDoesNotMatchButAllElementsAreMatched()
+    {
+        SimpletonMapHolder s1 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put(ONE, ONE)
+                .put(TWO, TWO)
+        );
+        SimpletonMapHolder s2 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
+                .put(ONE, ONE)
+                .put(COPY_OF_ONE, COPY_OF_ONE)
+        );
+
+        Description description = new StringDescription();
+        is(isDeeplyEqualToHandlingMaps(s2)).describeMismatch(s1, description);
+        assertThat(description.toString(), containsString("simpletons contains these unmatched elements: "));
+    }
+
+    private <T> Matcher<? super T> isDeeplyEqualToHandlingMaps(T s2) {
+        return deeplyEqualTo(s2, ImmutableMap.of(
+                ClassMatchers.isAssignableTo(Map.class), MatcherFactories.mapIsDeeplyEqual()));
+    }
+
+
 
     @Test
     public void assertThatDeepIsEqualWithListMatcherDoesMatchListOfCompositeObjects()
@@ -384,6 +563,16 @@ public class DeepIsEqualTest
         public SimpletonSetHolder(Simple... simpletons)
         {
             this.simpletons = ImmutableSet.copyOf(Arrays.asList(simpletons));
+        }
+    }
+
+    static class SimpletonMapHolder
+    {
+        final Map<Object, Simple> simpletons;
+
+        public SimpletonMapHolder(ImmutableMap.Builder<Object, Simple> builder)
+        {
+            this.simpletons = builder.build();
         }
     }
 

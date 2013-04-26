@@ -30,6 +30,11 @@ public final class MatcherFactories
         return SetDeepIsMatcherFactory.INSTANCE;
     }
 
+    public static MatcherFactory mapIsDeeplyEqual()
+    {
+        return MapDeepIsMatcherFactory.INSTANCE;
+    }
+
     public  static MatcherFactory listIsDeeplyEqual()
     {
         return ListDeepIsMatcherFactory.INSTANCE;
@@ -40,6 +45,7 @@ public final class MatcherFactories
         Map<Matcher<Class<?>>, MatcherFactory> factories = Maps.newHashMap();
         factories.put(ClassMatchers.isAssignableTo(Set.class), setIsDeeplyEqual());
         factories.put(ClassMatchers.isAssignableTo(List.class), listIsDeeplyEqual());
+        factories.put(ClassMatchers.isAssignableTo(Map.class), mapIsDeeplyEqual());
         return factories;
     }
 
@@ -74,5 +80,20 @@ public final class MatcherFactories
         }
     }
 
+
+
+    private static enum MapDeepIsMatcherFactory implements MatcherFactory
+    {
+        INSTANCE;
+
+        public <T> Matcher<? super T> newEqualMatcher(T expected, MatcherFactory baseMatcherFactory, DisjointSet<Object> equiv)
+        {
+            return buildMapMatcher((Map<?, ?>) expected, baseMatcherFactory, equiv);
+        }
+
+        private <T, K, V> Matcher<? super T> buildMapMatcher(Map<K, V> expected, MatcherFactory baseMatcherFactory, DisjointSet<Object> equiv) {
+            return new MapDeepIsEqualMatcher<T, K, V>(expected, baseMatcherFactory, equiv);
+        }
+    }
 
 }
