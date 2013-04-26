@@ -6,3 +6,6 @@ atlassian-hamcrest.iws
 .svn
 .idea
 
+.classpath
+.project
+.settings
