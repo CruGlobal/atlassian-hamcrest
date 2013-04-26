@@ -28,10 +28,10 @@ import static com.google.common.collect.Iterables.transform;
  *
  *
  *
- * @param <T> type of the elements in the set
+ * @param <S> represents the type of things this matcher matches (ie, sets).  Needed to make the compiler happy.
  */
 //TODO: there is probably too much copy/paste between this and ListDeepIsEqualMatcher and ArayDeepIsEqualMatcher
-class SetDeepIsEqualMatcher<T> extends DiagnosingMatcher<T>
+class SetDeepIsEqualMatcher<S> extends DiagnosingMatcher<S>
 {
     private final int expectedSize;
     private final Iterable<Matcher<?>> matchers;
@@ -73,7 +73,7 @@ class SetDeepIsEqualMatcher<T> extends DiagnosingMatcher<T>
         }
 
         @SuppressWarnings("unchecked") //just checked this above
-                Set<T> actualAsSet = (Set<T>) actual;
+                Set<?> actualAsSet = (Set<?>) actual;
         if (expectedSize != actualAsSet.size())
         {
             mismatchDescription.appendText("size should be ")
@@ -84,7 +84,7 @@ class SetDeepIsEqualMatcher<T> extends DiagnosingMatcher<T>
         }
 
         Set<Matcher<?>> unsatisfiedMatchers = Sets.newHashSet();
-        Set<T> unmatchingElements = Sets.newHashSet(actualAsSet);
+        Set<?> unmatchingElements = Sets.newHashSet(actualAsSet);
 
         lookForMatches(actualAsSet, unsatisfiedMatchers, unmatchingElements);
 
@@ -104,7 +104,7 @@ class SetDeepIsEqualMatcher<T> extends DiagnosingMatcher<T>
         return unsatisfiedMatchers.isEmpty() && unmatchingElements.isEmpty();
     }
 
-    private void lookForMatches(Set<T> actualAsSet, Set<Matcher<?>> unsatisfiedMatchers, Set<T> unmatchingElements) {
+    private void lookForMatches(Set<?> actualAsSet, Set<Matcher<?>> unsatisfiedMatchers, Set<?> unmatchingElements) {
         for (Matcher<?> matcher : matchers)
         {
             boolean mismatchFound = true;
@@ -123,10 +123,10 @@ class SetDeepIsEqualMatcher<T> extends DiagnosingMatcher<T>
         }
     }
 
-    private void describeUnmatchedElements(Description mismatchDescription, Set<T> unmatchingElements) {
+    private void describeUnmatchedElements(Description mismatchDescription, Set<?> unmatchingElements) {
         mismatchDescription.appendText("contains these unmatched elements: ");
         boolean first = true;
-        for (T element : unmatchingElements)
+        for (Object element : unmatchingElements)
         {
             if (first)
                 mismatchDescription.appendText("[");
