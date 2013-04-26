@@ -22,16 +22,14 @@ class ListDeepIsEqualMatcher<T> extends DiagnosingMatcher<T>
 {
     private final int expectedSize;
     private final Iterable<Matcher<?>> matchers;
-    private final DisjointSet<Object> equiv;
 
     public ListDeepIsEqualMatcher(Iterable<?> expected, MatcherFactory baseMatcherFactory, DisjointSet<Object> equiv)
     {
         this.expectedSize = size(expected);
-        this.matchers = transform(expected, cache(toMatchers(baseMatcherFactory)));
-        this.equiv = equiv;
+        this.matchers = transform(expected, cache(toMatchers(baseMatcherFactory, equiv)));
     }
 
-    private Function<Object, Matcher<?>> toMatchers(final MatcherFactory matcherFactory)
+    private Function<Object, Matcher<?>> toMatchers(final MatcherFactory matcherFactory, final DisjointSet<Object> equiv)
     {
         return new Function<Object, Matcher<?>>()
         {
