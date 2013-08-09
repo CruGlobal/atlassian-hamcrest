@@ -144,27 +144,19 @@ public class DeepIsEqual<T> extends DiagnosingMatcher<T>
         private static final Map<Matcher<Class<?>>, MatcherFactory> FACTORIES = Collections.unmodifiableMap(
             new HashMap<Matcher<Class<?>>, MatcherFactory>()
             {{
-                put(equalTo(Boolean.class), isEqual());
-                put(equalTo(Byte.class), isEqual());
-                put(equalTo(Short.class), isEqual());
-                put(equalTo(Integer.class), isEqual());
-                put(equalTo(Long.class), isEqual());
-                put(equalTo(Float.class), isEqual());
-                put(equalTo(Double.class), isEqual());
-                put(equalTo(Character.class), isEqual());
-                put(equalTo(String.class), isEqual());
+                put(Matchers.<Class<?>>equalTo(Boolean.class), isEqual());
+                put(Matchers.<Class<?>>equalTo(Byte.class), isEqual());
+                put(Matchers.<Class<?>>equalTo(Short.class), isEqual());
+                put(Matchers.<Class<?>>equalTo(Integer.class), isEqual());
+                put(Matchers.<Class<?>>equalTo(Long.class), isEqual());
+                put(Matchers.<Class<?>>equalTo(Float.class), isEqual());
+                put(Matchers.<Class<?>>equalTo(Double.class), isEqual());
+                put(Matchers.<Class<?>>equalTo(Character.class), isEqual());
+                put(Matchers.<Class<?>>equalTo(String.class), isEqual());
                 
                 put(isArray(), new ArrayEqualFactory());
             }}
         );
-    
-        /**
-         * Utility method to avoid problems with generics.
-         */
-        @SuppressWarnings("unchecked")
-        private static Matcher<Class<?>> equalTo(Class<?> c)
-        {
-            return (Matcher<Class<?>>) Matchers.equalTo(c);
-        }
+
     }
 }
