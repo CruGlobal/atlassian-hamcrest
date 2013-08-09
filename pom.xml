@@ -26,9 +26,56 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
+    <build>
+
+      <plugins>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.9</version>
+          <configuration>
+            <source>${maven.compiler.target}</source>
+            <!-- some day, I'd like to switch to asciidoc javadocs -->
+            <!--
+            <doclet>org.asciidoctor.Asciidoclet</doclet>
+            <docletArtifact>
+              <groupId>org.asciidoctor</groupId>
+              <artifactId>asciidoclet</artifactId>
+              <version>0.1.3</version>
+            </docletArtifact>
+            -->
+          </configuration>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.2.1</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+
     <properties>
-        <jdkLevel>1.6</jdkLevel>
+      <maven.compiler.target>1.6</maven.compiler.target>
+      <maven.compiler.source>1.6</maven.compiler.source>
     </properties>
 
 </project>
