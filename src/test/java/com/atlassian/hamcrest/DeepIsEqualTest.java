@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.*;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -426,6 +427,15 @@ public class DeepIsEqualTest
         Description description = new StringDescription();
         is(deeplyEqualTo(s2)).describeMismatch(s1, description);
         assertThat(description.toString(), is(equalTo("{simpletons [[<1>] => {number was <2>, name was \"Two\"}]}")));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualWithListMatcherDoesMatchListsOfDifferingConcreteType()
+    {
+        List<Simple> arrayList = Lists.newArrayList(ONE);
+        List<Simple> linkedList = Lists.newLinkedList();
+        linkedList.add(ONE);
+        assertThat(arrayList, deeplyEqualTo(linkedList));
     }
 
 

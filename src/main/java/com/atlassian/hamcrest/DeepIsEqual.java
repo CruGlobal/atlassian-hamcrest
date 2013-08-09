@@ -57,12 +57,6 @@ import com.google.common.collect.ImmutableMap;
 public class DeepIsEqual<T> extends DiagnosingMatcher<T>
 {
     /**
-     * Matcher which checks the type of the actual value against the type of the expected value.  If they don't match
-     * exactly then the whole match should fail.
-     */
-    private final Matcher<?> typeMatcher;
-    
-    /**
      * The main matcher for the objects, which will be composed of other matchers for the fields of complex objects.
      */
     private final Matcher<? super T> valueMatcher;
@@ -71,12 +65,10 @@ public class DeepIsEqual<T> extends DiagnosingMatcher<T>
     {
         if (expected == null)
         {
-            typeMatcher = is(anything());
             valueMatcher = nullValue();
         }
         else
         {
-            typeMatcher = is(equalTo(expected.getClass()));
             valueMatcher = matcherFactory.newEqualMatcher(expected, matcherFactory, new DisjointSet<Object>());
         }
     }
@@ -88,11 +80,6 @@ public class DeepIsEqual<T> extends DiagnosingMatcher<T>
     @Override
     protected boolean matches(Object actual, Description mismatchDescription)
     {
-        if (actual != null && !typeMatcher.matches(actual.getClass()))
-        {
-            typeMatcher.describeMismatch(actual.getClass(), mismatchDescription);
-            return false;
-        }
         if (!valueMatcher.matches(actual))
         {
             valueMatcher.describeMismatch(actual, mismatchDescription);

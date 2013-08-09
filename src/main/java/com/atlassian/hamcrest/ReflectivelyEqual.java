@@ -9,6 +9,8 @@ import static com.google.common.base.Predicates.or;
 import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.transform;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
@@ -29,6 +31,12 @@ import com.google.common.collect.ImmutableList;
  */
 class ReflectivelyEqual<T> extends DiagnosingMatcher<T>
 {
+    /**
+     * Matcher which checks the type of the actual value against the type of the expected value.  If they don't match
+     * exactly then the whole match should fail.
+     */
+    private final Matcher<?> typeMatcher;
+
     private final Iterable<ReflectivelyEqual.FieldMatcher> fieldMatchers;
     private final DisjointSet<Object> equiv;
     private final T expected;
@@ -38,6 +46,7 @@ class ReflectivelyEqual<T> extends DiagnosingMatcher<T>
         this.fieldMatchers = transform(matchableFieldsOf(expected.getClass()), cache(toValueMatchers(expected, baseMatcherFactory)));
         this.equiv = equiv;
         this.expected = expected;
+        this.typeMatcher = is(equalTo(expected.getClass()));
     }
 
     @Override
@@ -46,6 +55,11 @@ class ReflectivelyEqual<T> extends DiagnosingMatcher<T>
         if (actual == null)
         {
             mismatchDescription.appendValue(null);
+            return false;
+        }
+        if (!typeMatcher.matches(actual.getClass()))
+        {
+            typeMatcher.describeMismatch(actual.getClass(), mismatchDescription);
             return false;
         }
         if (equiv.equivalent(actual, expected))
