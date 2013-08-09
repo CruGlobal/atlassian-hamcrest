@@ -124,7 +124,7 @@ public class DeepIsEqualTest
     {
         SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, TWO);
         SimpletonSetHolder s2 = new SimpletonSetHolder(TWO, ONE);
-        assertThat(s1, isDeeplyEqualToHandlingSets(s2));
+        assertThat(s1, deeplyEqualTo(s2));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class DeepIsEqualTest
     {
         SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, TWO);
         SimpletonSetHolder s2 = new SimpletonSetHolder(TWO);
-        assertThat(s1, is(not(isDeeplyEqualToHandlingSets(s2))));
+        assertThat(s1, is(not(deeplyEqualTo(s2))));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class DeepIsEqualTest
     {
         SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, TWO);
         SimpletonSetHolder s2 = new SimpletonSetHolder(TWO, THREE);
-        assertThat(s1, is(not(isDeeplyEqualToHandlingSets(s2))));
+        assertThat(s1, is(not(deeplyEqualTo(s2))));
     }
 
     @Test
@@ -149,7 +149,7 @@ public class DeepIsEqualTest
         SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, COPY_OF_ONE);
         SimpletonSetHolder s2 = new SimpletonSetHolder(ONE, TWO);
 
-        assertThat(s1, is(not(isDeeplyEqualToHandlingSets(s2))));
+        assertThat(s1, is(not(deeplyEqualTo(s2))));
     }
 
     @Test
@@ -158,7 +158,7 @@ public class DeepIsEqualTest
         SimpletonSetHolder s1 = new SimpletonSetHolder(ONE, TWO);
         SimpletonSetHolder s2 = new SimpletonSetHolder(ONE, COPY_OF_ONE);
 
-        assertThat(s1, is(not(isDeeplyEqualToHandlingSets(s2))));
+        assertThat(s1, is(not(deeplyEqualTo(s2))));
     }
 
     @Test
@@ -168,7 +168,7 @@ public class DeepIsEqualTest
         SimpletonSetHolder s2 = new SimpletonSetHolder(TWO);
 
         Description description = new StringDescription();
-        is(isDeeplyEqualToHandlingSets(s2)).describeMismatch(s1, description);
+        is(deeplyEqualTo(s2)).describeMismatch(s1, description);
         assertThat(description.toString(), is(equalTo("{simpletons size should be 1, but is <2>}")));
     }
 
@@ -179,7 +179,7 @@ public class DeepIsEqualTest
         SimpletonSetHolder s2 = new SimpletonSetHolder(TWO, THREE);
 
         Description description = new StringDescription();
-        is(isDeeplyEqualToHandlingSets(s2)).describeMismatch(s1, description);
+        is(deeplyEqualTo(s2)).describeMismatch(s1, description);
         assertThat(description.toString(), containsString("simpletons does not match these: [{number is <3>, name is \"Three\"}], and it contains these unmatched elements: "));
     }
 
@@ -190,7 +190,7 @@ public class DeepIsEqualTest
         SimpletonSetHolder s2 = new SimpletonSetHolder(ONE, TWO);
 
         Description description = new StringDescription();
-        is(isDeeplyEqualToHandlingSets(s2)).describeMismatch(s1, description);
+        is(deeplyEqualTo(s2)).describeMismatch(s1, description);
         assertThat(description.toString(), containsString("simpletons does not match these: [{number is <2>, name is \"Two\"}]"));
     }
 
@@ -201,14 +201,8 @@ public class DeepIsEqualTest
         SimpletonSetHolder s2 = new SimpletonSetHolder(ONE, COPY_OF_ONE);
 
         Description description = new StringDescription();
-        is(isDeeplyEqualToHandlingSets(s2)).describeMismatch(s1, description);
+        is(deeplyEqualTo(s2)).describeMismatch(s1, description);
         assertThat(description.toString(), containsString("simpletons contains these unmatched elements: "));
-    }
-
-
-    private <T> Matcher<? super T> isDeeplyEqualToHandlingSets(T s2) {
-        return deeplyEqualTo(s2, ImmutableMap.of(
-                ClassMatchers.isAssignableTo(Set.class), MatcherFactories.setIsDeeplyEqual()));
     }
 
 
@@ -223,7 +217,7 @@ public class DeepIsEqualTest
                 .put("two", TWO)
                 .put("one", ONE)
         );
-        assertThat(s1, isDeeplyEqualToHandlingMaps(s2));
+        assertThat(s1, deeplyEqualTo(s2));
     }
 
     @Test
@@ -236,7 +230,7 @@ public class DeepIsEqualTest
         SimpletonMapHolder s2 = new SimpletonMapHolder(ImmutableMap.<Object, Simple>builder()
                 .put("two", TWO)
         );
-        assertThat(s1, is(not(isDeeplyEqualToHandlingMaps(s2))));
+        assertThat(s1, is(not(deeplyEqualTo(s2))));
     }
 
     @Test
@@ -250,7 +244,7 @@ public class DeepIsEqualTest
                 .put("two", TWO)
                 .put("three", THREE)
         );
-        assertThat(s1, is(not(isDeeplyEqualToHandlingMaps(s2))));
+        assertThat(s1, is(not(deeplyEqualTo(s2))));
     }
 
 
@@ -265,7 +259,7 @@ public class DeepIsEqualTest
                 .put(ONE, ONE)
                 .put(TWO, THREE)
         );
-        assertThat(s1, is(not(isDeeplyEqualToHandlingMaps(s2))));
+        assertThat(s1, is(not(deeplyEqualTo(s2))));
     }
 
     @Test
@@ -280,7 +274,7 @@ public class DeepIsEqualTest
                 .put(TWO, TWO)
         );
 
-        assertThat(s1, is(not(isDeeplyEqualToHandlingMaps(s2))));
+        assertThat(s1, is(not(deeplyEqualTo(s2))));
     }
 
     @Test
@@ -295,7 +289,7 @@ public class DeepIsEqualTest
                 .put(COPY_OF_ONE, COPY_OF_ONE)
         );
 
-        assertThat(s1, is(not(isDeeplyEqualToHandlingMaps(s2))));
+        assertThat(s1, is(not(deeplyEqualTo(s2))));
     }
 
 
@@ -311,7 +305,7 @@ public class DeepIsEqualTest
         );
 
         Description description = new StringDescription();
-        is(isDeeplyEqualToHandlingMaps(s2)).describeMismatch(s1, description);
+        is(deeplyEqualTo(s2)).describeMismatch(s1, description);
         assertThat(description.toString(), is(equalTo("{simpletons size should be 1, but is <2>}")));
     }
 
@@ -328,7 +322,7 @@ public class DeepIsEqualTest
         );
 
         Description description = new StringDescription();
-        is(isDeeplyEqualToHandlingMaps(s2)).describeMismatch(s1, description);
+        is(deeplyEqualTo(s2)).describeMismatch(s1, description);
         assertThat(description.toString(), containsString("simpletons does not match these: [key: is \"three\"; value: {number is <3>, name is \"Three\"}], and it contains these unmatched elements: [one="));
     }
 
@@ -346,7 +340,7 @@ public class DeepIsEqualTest
         );
 
         Description description = new StringDescription();
-        is(isDeeplyEqualToHandlingMaps(s2)).describeMismatch(s1, description);
+        is(deeplyEqualTo(s2)).describeMismatch(s1, description);
         assertThat(description.toString(), containsString("simpletons does not match these: [key: {number is <2>, name is \"Two\"}; value: {number is <3>, name is \"Three\"}], and it contains these unmatched elements: ["));
     }
 
@@ -364,7 +358,7 @@ public class DeepIsEqualTest
         );
 
         Description description = new StringDescription();
-        is(isDeeplyEqualToHandlingMaps(s2)).describeMismatch(s1, description);
+        is(deeplyEqualTo(s2)).describeMismatch(s1, description);
         assertThat(description.toString(), containsString("simpletons does not match these: [key: {number is <2>, name is \"Two\"}; value: {number is <2>, name is \"Two\"}]"));
     }
 
@@ -381,23 +375,16 @@ public class DeepIsEqualTest
         );
 
         Description description = new StringDescription();
-        is(isDeeplyEqualToHandlingMaps(s2)).describeMismatch(s1, description);
+        is(deeplyEqualTo(s2)).describeMismatch(s1, description);
         assertThat(description.toString(), containsString("simpletons contains these unmatched elements: "));
     }
-
-    private <T> Matcher<? super T> isDeeplyEqualToHandlingMaps(T s2) {
-        return deeplyEqualTo(s2, ImmutableMap.of(
-                ClassMatchers.isAssignableTo(Map.class), MatcherFactories.mapIsDeeplyEqual()));
-    }
-
-
 
     @Test
     public void assertThatDeepIsEqualWithListMatcherDoesMatchListOfCompositeObjects()
     {
         SimpletonListHolder s1 = new SimpletonListHolder(ONE, TWO);
         SimpletonListHolder s2 = new SimpletonListHolder(ONE, TWO);
-        assertThat(s1, isDeeplyEqualToHandlingLists(s2));
+        assertThat(s1, deeplyEqualTo(s2));
     }
 
     @Test
@@ -406,7 +393,7 @@ public class DeepIsEqualTest
         SimpletonListHolder s1 = new SimpletonListHolder(ONE, TWO);
         SimpletonListHolder s2 = new SimpletonListHolder(ONE);
 
-        assertThat(s1, is(not(isDeeplyEqualToHandlingLists(s2))));
+        assertThat(s1, is(not(deeplyEqualTo(s2))));
     }
 
 
@@ -416,7 +403,7 @@ public class DeepIsEqualTest
         SimpletonListHolder s1 = new SimpletonListHolder(ONE, TWO);
         SimpletonListHolder s2 = new SimpletonListHolder(ONE, THREE);
 
-        assertThat(s1, is(not(isDeeplyEqualToHandlingLists(s2))));
+        assertThat(s1, is(not(deeplyEqualTo(s2))));
     }
 
     @Test
@@ -426,7 +413,7 @@ public class DeepIsEqualTest
         SimpletonListHolder s2 = new SimpletonListHolder(TWO);
 
         Description description = new StringDescription();
-        is(isDeeplyEqualToHandlingLists(s2)).describeMismatch(s1, description);
+        is(deeplyEqualTo(s2)).describeMismatch(s1, description);
         assertThat(description.toString(), is(equalTo("{simpletons size should be 1, but is <2>}")));
     }
 
@@ -437,14 +424,8 @@ public class DeepIsEqualTest
         SimpletonListHolder s2 = new SimpletonListHolder(ONE, THREE);
 
         Description description = new StringDescription();
-        is(isDeeplyEqualToHandlingLists(s2)).describeMismatch(s1, description);
+        is(deeplyEqualTo(s2)).describeMismatch(s1, description);
         assertThat(description.toString(), is(equalTo("{simpletons [[<1>] => {number was <2>, name was \"Two\"}]}")));
-    }
-
-
-    private <T> Matcher<? super T> isDeeplyEqualToHandlingLists(T s2) {
-        return deeplyEqualTo(s2, ImmutableMap.of(
-                ClassMatchers.isAssignableTo(List.class), MatcherFactories.listIsDeeplyEqual()));
     }
 
 

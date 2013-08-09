@@ -133,7 +133,7 @@ public class DeepIsEqual<T> extends DiagnosingMatcher<T>
     public static <T> Matcher<? super T> deeplyEqualTo(T operand, Map<Matcher<Class<?>>, MatcherFactory> extraMatcherFactories)
     {
         return new DeepIsEqual<T>(operand, new ReflectiveObjectMatcherFactory(
-                ImmutableList.of(extraMatcherFactories, Primitives.FACTORIES)));
+                ImmutableList.of(extraMatcherFactories, Primitives.FACTORIES, MatcherFactories.collectionHandlingMatcherFactories())));
     }
 
     private static final class Primitives
