@@ -91,4 +91,13 @@ public class DiffPersistentArrayTest {
         assertEquals(array1.size(), 1);
         array1.set(12, "bum");
     }
+
+    @Test
+    public void assertThatToStringWorksWithZeroOneEmptySlotAndTwoElements()
+    {
+        PersistentArray<String> array = new DiffPersistentArray<String>(3)
+            .set(1, "foo")
+            .set(2, "bar");
+        assertEquals("[null, foo, bar]", array.toString());
+    }
 }

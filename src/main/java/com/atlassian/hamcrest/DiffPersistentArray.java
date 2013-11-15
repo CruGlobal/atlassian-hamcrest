@@ -214,4 +214,32 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
             newIndirect.array = new DiffArray<E>(this, diff.index, originalE);
         }
     }
+
+    //copy/pasted from java.util.AbstractCollection
+    /**
+     * Returns a string representation of this array.  The string
+     * representation consists of a list of the array's elements in the
+     * order they are returned by its iterator, enclosed in square brackets
+     * (<tt>"[]"</tt>).  Adjacent elements are separated by the characters
+     * <tt>", "</tt> (comma and space).  Elements are converted to strings as
+     * by {@link String#valueOf(Object)}.
+     *
+     * @return a string representation of this collection
+     */
+    @Override
+    public String toString() {
+        Iterator<E> i = iterator();
+        if (! i.hasNext())
+            return "[]";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        for (;;) {
+            E e = i.next();
+            sb.append(e == this ? "(this Collection)" : e);
+            if (! i.hasNext())
+                return sb.append(']').toString();
+            sb.append(", ");
+        }
+    }
 }
