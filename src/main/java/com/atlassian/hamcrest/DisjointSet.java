@@ -7,7 +7,7 @@ import java.util.IdentityHashMap;
 import java.util.Stack;
 
 /**
- * A disjoint-set data structure that permits stack-like deunion operations. Initially, it is assumed that all elements
+ * A <a href="http://en.wikipedia.org/wiki/Disjoint-set_data_structure">disjoint-set data structure</a> that permits stack-like deunion operations. Initially, it is assumed that all elements
  * are singletons. Elements are combined into a single set by the {@link #union} operation. Elements can
  * be queried to determine if they are in the same set by the {@link #equivalent} operation. {@link DisjointSet}s
  * also support stack-like {@link #deunion} operations. This allows the data structure to be efficiently "rolled back" to any previous
