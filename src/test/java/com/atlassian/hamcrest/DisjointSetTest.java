@@ -38,4 +38,15 @@ public class DisjointSetTest
         set.union("bar", "baz");
         assert(set.equivalent("foo", "baz"));        
     }
+
+    @Test
+    public void assertThatUndoAfterResizingLeadsToNonEquivalentValues()
+    {
+        DisjointSet<String> set = new DisjointSet<String>(1);
+        set.union("foo", "bar");
+        set.union("bar", "baz");
+        set.deunion();
+        set.deunion();
+        assert(!set.equivalent("foo", "baz"));
+    }
 }

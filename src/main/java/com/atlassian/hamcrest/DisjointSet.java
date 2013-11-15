@@ -20,7 +20,7 @@ import java.util.Stack;
  */
 public class DisjointSet<E>
 {
-    private final Map<E, Integer> elementMap = new IdentityHashMap<E, Integer>();
+    private final Map<E, Integer> elementsToIndexes = new IdentityHashMap<E, Integer>();
     private PersistentArray<Integer> backingArray;
     private final Stack<PersistentArray<Integer>> versions;
     private static final int DEFAULT_SIZE = 32;
@@ -65,14 +65,31 @@ public class DisjointSet<E>
      */
     public void union(E e1, E e2)
     {
-        Integer i1 = find(e1);
-        Integer i2 = find(e2);
+        Integer i1 = findRoot(e1);
+        Integer i2 = findRoot(e2);
 
         if (!i1.equals(i2))
         {
-            versions.push(backingArray);
-            backingArray = backingArray.set(i1, i2);
+            setParent(i1, i2);
         }
+    }
+
+    private void setParent(Integer child, Integer parent) {
+        versions.push(backingArray);
+
+        if (backingArray.size() <= child)
+        {
+            backingArray = backingArray.resize(newSize(child), IdentityInitializerFunction.INSTANCE);
+        }
+        backingArray = backingArray.set(child, parent);
+    }
+
+    private int newSize(Integer i1) {
+        int newSize;
+        do {
+            newSize = backingArray.size() * 2;
+        } while (newSize <= i1);
+        return newSize;
     }
 
     /**
@@ -111,38 +128,65 @@ public class DisjointSet<E>
      */
     public boolean equivalent(E e1, E e2)
     {
-        Integer i1 = find(e1);
-        Integer i2 = find(e2);
+        Integer root1 = findRoot(e1);
+        Integer root2 = findRoot(e2);
 
-        return i1.equals(i2);
+        return root1.equals(root2);
     }
 
-    private Integer find(E elt)
+    private Integer findRoot(E elt)
     {
-        Integer result = elementMap.get(elt);
-        if (result == null)
+        Integer index = elementsToIndexes.get(elt);
+        if (index == null)
         {
-            result = elementMap.size();
-            elementMap.put(elt, result);
-            if (backingArray.size() <= result)
-            {
-                backingArray = backingArray.resize(backingArray.size() * 2, IdentityInitializerFunction.INSTANCE);
-            }
+            index = elementsToIndexes.size();
+            elementsToIndexes.put(elt, index);
         }
 
-
-        Integer originalResult = result;
-        while (!result.equals(backingArray.get(result)))
+        if (index >= backingArray.size())
         {
-            result = backingArray.get(result);
+            return index;
         }
-
-        // Path compression
-        if (! originalResult.equals(result))
+        else
         {
-            backingArray = backingArray.set(originalResult, result);
+            Integer root = findRoot(index);
+            compressPaths(index, root);
+            return root;
         }
+    }
 
-        return result;
+    private Integer findRoot(Integer index) {
+        Integer pointer;
+        Integer parent = index;
+        do
+        {
+            pointer = parent;
+            parent = getParent(pointer);
+        }
+        while (!pointer.equals(parent));
+
+        return pointer;
+    }
+
+    private Integer getParent(Integer pointer) {
+        Integer parent;
+        if (pointer >= backingArray.size())
+            parent = pointer;
+        else
+            parent = backingArray.get(pointer);
+        return parent;
+    }
+
+    private void compressPaths(Integer index, Integer root) {
+        Integer pointer;
+        Integer parent = index;
+        do
+        {
+            pointer = parent;
+            parent = getParent(pointer);
+            if (pointer < backingArray.size())
+                backingArray.set(pointer, root);
+        }
+        while (!pointer.equals(parent));
     }
 }
