@@ -142,51 +142,29 @@ public class DisjointSet<E>
             index = elementsToIndexes.size();
             elementsToIndexes.put(elt, index);
         }
+        return findRoot(index);
+    }
 
-        if (index >= backingArray.size())
-        {
+    private Integer findRoot(Integer index) {
+        Integer parent = getParent(index);
+        if (parent.equals(index))
             return index;
-        }
         else
         {
-            Integer root = findRoot(index);
-            compressPaths(index, root);
+            Integer root = findRoot(parent);
+            compressPath(index, root);
             return root;
         }
     }
 
-    private Integer findRoot(Integer index) {
-        Integer pointer;
-        Integer parent = index;
-        do
-        {
-            pointer = parent;
-            parent = getParent(pointer);
-        }
-        while (!pointer.equals(parent));
-
-        return pointer;
-    }
-
     private Integer getParent(Integer pointer) {
-        Integer parent;
         if (pointer >= backingArray.size())
-            parent = pointer;
+            return pointer;
         else
-            parent = backingArray.get(pointer);
-        return parent;
+            return backingArray.get(pointer);
     }
 
-    private void compressPaths(Integer index, Integer root) {
-        Integer pointer;
-        Integer parent = index;
-        do
-        {
-            pointer = parent;
-            parent = getParent(pointer);
-            if (pointer < backingArray.size())
-                backingArray.set(pointer, root);
-        }
-        while (!pointer.equals(parent));
+    private void compressPath(Integer index, Integer root) {
+        backingArray.set(index, root);
     }
 }
