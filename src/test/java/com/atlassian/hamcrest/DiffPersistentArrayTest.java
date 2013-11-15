@@ -70,8 +70,8 @@ public class DiffPersistentArrayTest {
     public void assertThatGettingANegativeIndexOnDiffArrayThrowsAnException()
     {
         PersistentArray<String> array1 = new DiffPersistentArray<String>(3);
-        array1.set(2, "baz");
-        array1.get(-1);
+        PersistentArray<String> array2 = array1.set(2, "baz");
+        array2.get(-1);
     }
 
     @Test
