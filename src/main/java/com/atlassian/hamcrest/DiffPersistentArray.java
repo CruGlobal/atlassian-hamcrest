@@ -183,17 +183,27 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
     public PersistentArray<E> resize(int newSize)
     {
         reroot();
-        assert (array instanceof DirectArray);
-        ((DirectArray<E>)array).resize(newSize);
+        resizeDirectArrayIfNecessary(newSize, null);
         return new DiffPersistentArray(array, newSize);
     }
 
     public PersistentArray<E> resize(int newSize, Function<Integer, E> initFun)
     {
         reroot();
-        assert (array instanceof DirectArray);
-        ((DirectArray<E>)array).resize(newSize, initFun);
+        resizeDirectArrayIfNecessary(newSize, initFun);
         return new DiffPersistentArray(array, newSize);
+    }
+
+    private void resizeDirectArrayIfNecessary(int newSize, Function<Integer, E> initFun) {
+        if (array.size() < newSize)
+        {
+            assert (array instanceof DirectArray);
+            DirectArray<E> directArray = (DirectArray<E>) array;
+            if (initFun == null)
+                directArray.resize(newSize);
+            else
+                directArray.resize(newSize, initFun);
+        }
     }
 
     private void reroot()

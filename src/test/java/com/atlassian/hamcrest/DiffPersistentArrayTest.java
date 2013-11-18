@@ -93,6 +93,16 @@ public class DiffPersistentArrayTest {
     }
 
     @Test
+    public void assertThatResizeCanBePerformedMultipleTimes()
+    {
+        PersistentArray<String> array1 = new DiffPersistentArray<String>(1);
+        array1.resize(32);
+        assertEquals(array1.size(), 1);
+        array1.resize(32);
+        assertEquals(array1.size(), 1);
+    }
+
+    @Test
     public void assertThatToStringWorksWithZeroOneEmptySlotAndTwoElements()
     {
         PersistentArray<String> array = new DiffPersistentArray<String>(3)
