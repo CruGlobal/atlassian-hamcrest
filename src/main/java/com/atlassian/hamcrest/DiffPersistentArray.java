@@ -18,7 +18,6 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
 
     private static class DirectArray<E> extends BaseArray<E>
     {
-        private int size;
         private Object[] elementData;
 
         private DirectArray(int size, Function<Integer, E> initFun)
@@ -34,14 +33,14 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
         private DirectArray(int size)
         {
             assert size > 0;
-            this.size = size;
             this.elementData = new Object[size];
         }
 
         int size()
         {
-            return size;
+            return elementData.length;
         }
+
         @SuppressWarnings("unchecked")
         E get(int index)
         {
@@ -56,16 +55,15 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
 
         void resize(int newSize)
         {
-            assert (newSize > size);
+            assert (newSize > elementData.length);
             Object[] newElementData = new Object[newSize];
             System.arraycopy(elementData, 0, newElementData, 0, elementData.length);
             elementData = newElementData;
-            size = newSize;
         }
 
         void resize(int newSize, Function<Integer, E> initFun)
         {
-            int oldSize = size;
+            int oldSize = elementData.length;
             resize(newSize);
             for (int i = oldSize; i < newSize; i++)
             {
@@ -165,8 +163,6 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
         DiffPersistentArray<E> result = new DiffPersistentArray<E>(original, size);
         array = new DiffArray<E>(result, index, originalE);
         return result;
-    }
-
     }
 
     public PersistentArray<E> resize(int newSize)
