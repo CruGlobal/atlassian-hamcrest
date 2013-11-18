@@ -184,14 +184,14 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
     {
         reroot();
         resizeDirectArrayIfNecessary(newSize, null);
-        return new DiffPersistentArray(array, newSize);
+        return new DiffPersistentArray<E>(array, newSize);
     }
 
     public PersistentArray<E> resize(int newSize, Function<Integer, E> initFun)
     {
         reroot();
         resizeDirectArrayIfNecessary(newSize, initFun);
-        return new DiffPersistentArray(array, newSize);
+        return new DiffPersistentArray<E>(array, newSize);
     }
 
     private void resizeDirectArrayIfNecessary(int newSize, Function<Integer, E> initFun) {
