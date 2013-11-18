@@ -2,6 +2,7 @@ package com.atlassian.hamcrest;
 
 import com.google.common.base.Function;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.IdentityHashMap;
 import java.util.Stack;
@@ -13,25 +14,36 @@ import java.util.Stack;
  * also support stack-like {@link #deunion} operations. This allows the data structure to be efficiently "rolled back" to any previous
  * state in time, which can be useful in backtracking algorithms.
  *
- * This implementation is backed by a {@link PersistentArray}. It includes a path compression optimization, but currently does not
- * do union-by-rank.
+ * This implementation is backed by a {@link PersistentArray}. It includes both path compression and union-by-rank optimizations.
  *
  * @param <E>
  */
 public class DisjointSet<E>
 {
+
+    private static class Node
+    {
+        final int parent;
+        final int rank;
+
+        private Node(int parent, int rank) {
+            this.parent = parent;
+            this.rank = rank;
+        }
+    }
+
     private final Map<E, Integer> elementsToIndexes = new IdentityHashMap<E, Integer>();
-    private PersistentArray<Integer> backingArray;
-    private final Stack<PersistentArray<Integer>> versions;
+    private PersistentArray<Node> backingArray;
+    private final Stack<PersistentArray<Node>> versions;
     private static final int DEFAULT_SIZE = 32;
 
-    private enum IdentityInitializerFunction implements Function<Integer, Integer>
+    private enum NodeInitializer implements Function<Integer, Node>
     {
         INSTANCE;
 
-        public Integer apply(Integer i)
+        public Node apply(Integer index)
         {
-            return i;
+            return new Node(index, 0);
         }
     }
 
@@ -54,8 +66,8 @@ public class DisjointSet<E>
         {
             throw new IllegalArgumentException("Expected size must be > 0");
         }
-        backingArray = new DiffPersistentArray<Integer>(expectedSize, IdentityInitializerFunction.INSTANCE);
-        versions = new Stack<PersistentArray<Integer>>();
+        backingArray = new DiffPersistentArray<Node>(expectedSize, NodeInitializer.INSTANCE);
+        versions = new Stack<PersistentArray<Node>>();
     }
 
     /**
@@ -70,18 +82,38 @@ public class DisjointSet<E>
 
         if (!i1.equals(i2))
         {
-            setParent(i1, i2);
+            Node node1 = getNode(i1);
+            Node node2 = getNode(i2);
+            if (node1.rank < node2.rank)
+                setParent(i1, i2);
+            else if (node1.rank > node2.rank)
+                setParent(i2, i1);
+            else {
+                setParent(i2, i1);
+                bumpRank(i1);
+            }
         }
+    }
+
+    private void bumpRank(Integer index) {
+        resizeIfNecessary(index);
+        Node node = backingArray.get(index);
+        backingArray = backingArray.set(index, new Node(node.parent, node.rank + 1));
     }
 
     private void setParent(Integer child, Integer parent) {
         versions.push(backingArray);
 
-        if (backingArray.size() <= child)
+        resizeIfNecessary(child);
+        Node newNode = new Node(parent, backingArray.get(child).rank);
+        backingArray = backingArray.set(child, newNode);
+    }
+
+    private void resizeIfNecessary(Integer index) {
+        if (backingArray.size() <= index)
         {
-            backingArray = backingArray.resize(newSize(child), IdentityInitializerFunction.INSTANCE);
+            backingArray = backingArray.resize(newSize(index), NodeInitializer.INSTANCE);
         }
-        backingArray = backingArray.set(child, parent);
     }
 
     private int newSize(Integer i1) {
@@ -146,7 +178,7 @@ public class DisjointSet<E>
     }
 
     private Integer findRoot(Integer index) {
-        Integer parent = getParent(index);
+        Integer parent = getNode(index).parent;
         if (parent.equals(index))
             return index;
         else
@@ -157,14 +189,18 @@ public class DisjointSet<E>
         }
     }
 
-    private Integer getParent(Integer pointer) {
-        if (pointer >= backingArray.size())
-            return pointer;
+    private Node getNode(Integer index) {
+        Node node;
+        if (index >= backingArray.size())
+            node = new Node(index, 0);
         else
-            return backingArray.get(pointer);
+            node = backingArray.get(index);
+        return node;
     }
 
     private void compressPath(Integer index, Integer root) {
-        backingArray.set(index, root);
+        Node newNode = new Node(root, backingArray.get(index).rank);
+        backingArray = backingArray.set(index, newNode);
     }
+
 }
