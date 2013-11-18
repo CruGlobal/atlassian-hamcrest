@@ -45,7 +45,7 @@ public class DiffPersistentArrayTest {
         assertNull(array2.get(1));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=IndexOutOfBoundsException.class)
     public void assertThatGettingANegativeIndexThrowsAnException()
     {
         PersistentArray<String> array1 = new DiffPersistentArray<String>(3);
@@ -59,14 +59,14 @@ public class DiffPersistentArrayTest {
         new DiffPersistentArray<String>(-2);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=IndexOutOfBoundsException.class)
     public void assertThatSettingANegativeIndexThrowsAnException()
     {
         PersistentArray<String> array1 = new DiffPersistentArray<String>(3);
         array1.set(-1, "baz");
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=IndexOutOfBoundsException.class)
     public void assertThatGettingANegativeIndexOnDiffArrayThrowsAnException()
     {
         PersistentArray<String> array1 = new DiffPersistentArray<String>(3);
@@ -83,7 +83,7 @@ public class DiffPersistentArrayTest {
         assertEquals("foo", array3.get(0));        
     }
 
-    @Test(expected=ArrayIndexOutOfBoundsException.class)
+    @Test(expected=IndexOutOfBoundsException.class)
     public void assertThatResizePreservesOriginalValues()
     {
         PersistentArray<String> array1 = new DiffPersistentArray<String>(1);

@@ -1,6 +1,7 @@
 package com.atlassian.hamcrest;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 
 import java.util.Iterator;
 
@@ -32,10 +33,7 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
 
         private DirectArray(int size)
         {
-            if (size < 0)
-            {
-                throw new IllegalArgumentException("Size must be > 0");
-            }
+            assert size > 0;
             this.size = size;
             this.elementData = new Object[size];
         }
@@ -47,10 +45,7 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
         @SuppressWarnings("unchecked")
         E get(int index)
         {
-            if (index < 0)
-            {
-                throw new IllegalArgumentException("Index must be > 0");
-            }
+            assert index >= 0;
             return (E)elementData[index];
         }
 
@@ -87,10 +82,7 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
 
         private DiffArray(DiffPersistentArray<E> base, int index, E value)
         {
-           if (index < 0)
-           {
-               throw new IllegalArgumentException("Index must be > 0");
-           }
+            assert index >= 0;
             this.base = base;
             this.index = index;
             this.value = value;
@@ -103,10 +95,7 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
 
         E get(int index)
         {
-            if (index < 0)
-            {
-                throw new IllegalArgumentException("Index must be > 0");
-            }
+            assert index >= 0;
             if (this.index == index)
             {
                 return value;
@@ -123,14 +112,20 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
 
     public DiffPersistentArray(int size)
     {
+        sizeCheck(size);
         array = new DirectArray<E>(size);
         this.size = size;
     }
 
     public DiffPersistentArray(int size, Function<Integer, E> initFun)
     {
+        sizeCheck(size);
         array = new DirectArray<E>(size, initFun);
         this.size = size;
+    }
+
+    private void sizeCheck(int size) {
+        Preconditions.checkArgument(size > 0, "Size must be > 0");
     }
 
     private DiffPersistentArray(BaseArray<E> array, int size)
@@ -141,7 +136,7 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
 
     public E get(int index)
     {
-        sizeCheck(index);
+        Preconditions.checkElementIndex(index, size);
         reroot();
         return array.get(index);
     }
@@ -161,7 +156,7 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
 
     public PersistentArray<E> set(int index, E value)
     {
-        sizeCheck(index);
+        Preconditions.checkElementIndex(index, size);
         reroot();
         assert(array instanceof DirectArray);
         DirectArray<E> original = (DirectArray<E>)array;
@@ -172,12 +167,6 @@ public final class DiffPersistentArray<E> implements PersistentArray<E> {
         return result;
     }
 
-    private void sizeCheck(int index)
-    {
-        if (index >= size)
-        {
-            throw new ArrayIndexOutOfBoundsException();
-        }
     }
 
     public PersistentArray<E> resize(int newSize)
