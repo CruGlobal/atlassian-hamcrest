@@ -119,9 +119,9 @@ public class DisjointSet<E>
     }
 
     private int newSize(Integer i1) {
-        int newSize;
+        int newSize = backingArray.size();
         do {
-            newSize = backingArray.size() * 2;
+            newSize = newSize * 2;
         } while (newSize <= i1);
         return newSize;
     }
