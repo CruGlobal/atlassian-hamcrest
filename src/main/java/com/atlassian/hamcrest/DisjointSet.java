@@ -99,14 +99,16 @@ public class DisjointSet<E>
         versions.push(backingArray);
 
         resizeIfNecessary(child);
-        Node newNode = new Node(parent, backingArray.get(child).rank);
+        Node node = backingArray.get(child);
+        Node newNode = new Node(parent, node.rank);
         backingArray = backingArray.set(child, newNode);
     }
 
     private void bumpRank(Integer index) {
         resizeIfNecessary(index);
         Node node = backingArray.get(index);
-        backingArray = backingArray.set(index, new Node(node.parent, node.rank + 1));
+        Node newNode = new Node(node.parent, node.rank + 1);
+        backingArray = backingArray.set(index, newNode);
     }
 
     private void resizeIfNecessary(Integer index) {
