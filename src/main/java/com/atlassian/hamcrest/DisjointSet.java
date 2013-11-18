@@ -95,18 +95,18 @@ public class DisjointSet<E>
         }
     }
 
-    private void bumpRank(Integer index) {
-        resizeIfNecessary(index);
-        Node node = backingArray.get(index);
-        backingArray = backingArray.set(index, new Node(node.parent, node.rank + 1));
-    }
-
     private void setParent(Integer child, Integer parent) {
         versions.push(backingArray);
 
         resizeIfNecessary(child);
         Node newNode = new Node(parent, backingArray.get(child).rank);
         backingArray = backingArray.set(child, newNode);
+    }
+
+    private void bumpRank(Integer index) {
+        resizeIfNecessary(index);
+        Node node = backingArray.get(index);
+        backingArray = backingArray.set(index, new Node(node.parent, node.rank + 1));
     }
 
     private void resizeIfNecessary(Integer index) {
