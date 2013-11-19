@@ -6,7 +6,6 @@ import org.hamcrest.Description;
 import org.hamcrest.DiagnosingMatcher;
 import org.hamcrest.Matcher;
 
-import java.util.List;
 import java.util.Set;
 
 import static com.atlassian.hamcrest.Functions.cache;
@@ -123,37 +122,13 @@ class SetDeepIsEqualMatcher<S> extends DiagnosingMatcher<S>
 
     private void describeUnmatchedElements(Description mismatchDescription, Set<?> unmatchingElements) {
         mismatchDescription.appendText("contains these unmatched elements: ");
-        boolean first = true;
-        for (Object element : unmatchingElements)
-        {
-            if (first)
-                mismatchDescription.appendText("[");
-            else
-            {
-                mismatchDescription.appendText(", ");
-            }
-            first = false;
-            mismatchDescription.appendText(element.toString());
-        }
-        mismatchDescription.appendText("]");
+        mismatchDescription.appendValueList("[", ", ", "]", unmatchingElements);
     }
 
     private void describeUnsatisfiedMatchers(Description mismatchDescription, Set<Matcher<?>> unsatisfiedMatchers) {
-        mismatchDescription.appendText("does not match these: ");
 
-        boolean first = true;
-        for (Matcher matcher : unsatisfiedMatchers)
-        {
-            if (first)
-                mismatchDescription.appendText("[");
-            else
-            {
-                mismatchDescription.appendText(", ");
-            }
-            first = false;
-            mismatchDescription.appendText(matcher.toString());
-        }
-        mismatchDescription.appendText("]");
+        mismatchDescription.appendText("does not match these: ");
+        mismatchDescription.appendList("[", ", ", "]", unsatisfiedMatchers);
     }
 
     public void describeTo(Description desc)
