@@ -7,6 +7,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -126,7 +128,7 @@ public class DeepIsEqual<T> extends DiagnosingMatcher<T>
     private static final class Primitives
     {
         /**
-         * {@code MatcherFactory}s to use for primitive types and arrays.
+         * {@code MatcherFactory}s to use for primitive types, arrays, and well-known value types.
          */
         private static final Map<Matcher<Class<?>>, MatcherFactory> FACTORIES = Collections.unmodifiableMap(
             new HashMap<Matcher<Class<?>>, MatcherFactory>()
@@ -139,8 +141,11 @@ public class DeepIsEqual<T> extends DiagnosingMatcher<T>
                 put(Matchers.<Class<?>>equalTo(Float.class), isEqual());
                 put(Matchers.<Class<?>>equalTo(Double.class), isEqual());
                 put(Matchers.<Class<?>>equalTo(Character.class), isEqual());
+
                 put(Matchers.<Class<?>>equalTo(String.class), isEqual());
-                
+                put(Matchers.<Class<?>>equalTo(BigDecimal.class), isEqual());
+                put(Matchers.<Class<?>>equalTo(BigInteger.class), isEqual());
+
                 put(isArray(), new ArrayEqualFactory());
             }}
         );
