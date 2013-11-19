@@ -35,7 +35,6 @@ public class GraphTest {
             containsString("neighbors ["),
             containsString("&Node<A-1>")
         ));
-        System.err.println(description);
     }
 
     @Test
