@@ -92,7 +92,9 @@ public class DeepIsEqual<T> extends DiagnosingMatcher<T>
 
     public void describeTo(Description description)
     {
-        valueMatcher.describeTo(description);
+        CycleBreakingDescription cycleBreakingDescription = new CycleBreakingDescription(new IndentingDescription(description));
+        cycleBreakingDescription.appendDescriptionOf(valueMatcher);
+        cycleBreakingDescription.flushDescription();
     }
     
     /**
@@ -121,8 +123,13 @@ public class DeepIsEqual<T> extends DiagnosingMatcher<T>
     @Factory
     public static <T> Matcher<? super T> deeplyEqualTo(T operand, Map<Matcher<Class<?>>, MatcherFactory> extraMatcherFactories)
     {
-        return new DeepIsEqual<T>(operand, new ReflectiveObjectMatcherFactory(
-                ImmutableList.of(extraMatcherFactories, Primitives.FACTORIES, MatcherFactories.collectionHandlingMatcherFactories())));
+        return new DeepIsEqual<T>(
+            operand, new CachingMatcherFactory(
+            new ReflectiveObjectMatcherFactory(
+                ImmutableList.of(
+                    extraMatcherFactories,
+                    Primitives.FACTORIES,
+                    MatcherFactories.collectionHandlingMatcherFactories()))));
     }
 
     private static final class Primitives

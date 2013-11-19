@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.Test;
 
@@ -71,7 +70,11 @@ public class DeepIsEqualTest
     public void assertThatDeepIsEqualDescribesExpectedSimpleObject()
     {
         Description description = new StringDescription().appendDescriptionOf(deeplyEqualTo(TWO));
-        assertThat(description.toString(), is(equalTo("{number is <2>, name is \"Two\"}")));
+        assertThat(description.toString(), is(equalTo(
+            "{\n" +
+            "  number is <2>, \n" +
+            "  name is \"Two\"\n" +
+            "}")));
     }
     
     @Test
@@ -464,29 +467,62 @@ public class DeepIsEqualTest
     }
 
     @Test
-    public void assertThatDeepIsEqualMatchesCyclicObjects()
+    public void assertThatDeepIsEqualMatchesCyclicSingletons()
     {
-        Cyclic cyclic1 = new Cyclic(3);
-        cyclic1.cycle = cyclic1;
-        Cyclic cyclic2 = new Cyclic(3);
-        cyclic2.cycle = cyclic2;
+        Cyclic cyclic1 = makeCyclicSingleton();
+        Cyclic cyclic2 = makeCyclicSingleton();
         assertThat(cyclic2, is(deeplyEqualTo(cyclic1)));
     }
 
     @Test
-    public void assertThatDeepIsEqualDoesNotMatchDistinctCyclicObjects()
+    public void assertThatDeepIsEqualDoesNotMatchDistinctCyclicSingletons()
     {
-        Cyclic cyclic1 = new Cyclic(3);
-        cyclic1.cycle = cyclic1;
-        Cyclic cyclic2 = new Cyclic(4);
-        cyclic2.cycle = cyclic2;
+        Cyclic cyclic1 = makeCyclicSingleton();
+        Cyclic cyclic2 = makeCyclicSingleton();
+        cyclic2.value = 4;
+
         assertThat(cyclic2, is(not(deeplyEqualTo(cyclic1))));
      }
+
+    private Cyclic makeCyclicSingleton() {
+        Cyclic cyclic1 = new Cyclic(3);
+        cyclic1.cycle = cyclic1;
+        return cyclic1;
+    }
+
+    @Test
+    public void assertThatDeepIsEqualMatchesCyclicPairs()
+    {
+        Cyclic cyclic1 = makeCyclicPair();
+        Cyclic cyclic2 = makeCyclicPair();
+
+        assertThat(cyclic1, is(deeplyEqualTo(cyclic2)));
+    }
+
+    @Test
+    public void assertThatDeepIsEqualDoesNotMatchDistinctCyclicPairs()
+    {
+        Cyclic cyclic1 = makeCyclicPair();
+        Cyclic cyclic2 = makeCyclicPair();
+
+        cyclic1.cycle.value = 2;
+
+        assertThat(cyclic1, is(not(deeplyEqualTo(cyclic2))));
+    }
+
+
+    private Cyclic makeCyclicPair() {
+        Cyclic cyclicA = new Cyclic(3);
+        Cyclic cyclicB = new Cyclic(7);
+        cyclicA.cycle = cyclicB;
+        cyclicB.cycle = cyclicA;
+        return cyclicA;
+    }
 
     static class Cyclic
     {
        Cyclic cycle;
-       final int value;
+       int value;
 
         Cyclic(int value)
         {

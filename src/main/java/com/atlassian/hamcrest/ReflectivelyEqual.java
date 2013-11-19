@@ -81,8 +81,13 @@ class ReflectivelyEqual<T> extends DiagnosingMatcher<T>
             }
             if (!mismatchFound)
             {
-                mismatchDescription.appendText("{");
                 mismatchFound = true;
+
+                //an important optimization when there are many cycles
+                if (mismatchDescription == Description.NONE)
+                    break;
+
+                mismatchDescription.appendText("{");
             }
             else
             {
@@ -152,7 +157,11 @@ class ReflectivelyEqual<T> extends DiagnosingMatcher<T>
             }
         };
     };
-    
+
+    public T getExpected() {
+        return expected;
+    }
+
     /**
      * Container for a {@link Field} and the {@link Matcher} which should be used when comparing values of the field.
      */
