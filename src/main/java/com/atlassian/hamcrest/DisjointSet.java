@@ -1,10 +1,15 @@
 package com.atlassian.hamcrest;
 
 import com.google.common.base.Function;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.IdentityHashMap;
+import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -205,4 +210,14 @@ public class DisjointSet<E>
         backingArray = backingArray.set(index, newNode);
     }
 
+    @Override
+    public String toString() {
+        Multimap<Integer, E> partition = HashMultimap.create();
+
+        for (E element : elementsToIndexes.keySet()) {
+            partition.put(findRoot(element), element);
+        }
+
+        return partition.asMap().values().toString();
+    }
 }
