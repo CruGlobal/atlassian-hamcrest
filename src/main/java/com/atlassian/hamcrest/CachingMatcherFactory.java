@@ -26,6 +26,9 @@ public class CachingMatcherFactory implements MatcherFactory {
     public <T> Matcher<? super T> newEqualMatcher(
         final T expected, final MatcherFactory baseMatcherFactory, final DisjointSet<Object> equiv) {
 
+        if (expected == null)
+            return actualFactory.newEqualMatcher(expected, this, equiv);
+
         Object cachedMatcher = cache.getIfPresent(expected);
         if (cachedMatcher != null)
             return (Matcher<? super T>) cachedMatcher;

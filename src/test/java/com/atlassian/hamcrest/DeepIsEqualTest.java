@@ -59,6 +59,12 @@ public class DeepIsEqualTest
     {
         assertThat(ONE, is(deeplyEqualTo(COPY_OF_ONE)));
     }
+
+    @Test
+    public void assertThatDeepIsEqualMatchesSimpleObjectsWithNullFields()
+    {
+        assertThat(new Simple(1, null), is(deeplyEqualTo(new Simple(1, null))));
+    }
     
     @Test
     public void assertThatDeepIsEqualDoesNotMatchDifferentSimpleObjects()
