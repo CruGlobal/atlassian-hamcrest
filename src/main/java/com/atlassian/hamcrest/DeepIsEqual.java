@@ -51,10 +51,6 @@ import com.google.common.collect.ImmutableMap;
  * Because that isn't exactly the clearest code, it is highly recommended that you create utility methods that
  * encapsulate the creation of the the {@code MatcherFactory} maps and registration of them to make your tests easier
  * to read.
- * 
- * <p>Note: There is currently no support for cyclic object graphs and no effort made to detect them.  If there is a
- * cycle in your object graph it will cause a {@link StackOverflowError}.  If you have cycles in your object graph you
- * can overcome this limitation by providing a custom matcher. 
  */
 public class DeepIsEqual<T> extends DiagnosingMatcher<T>
 {
