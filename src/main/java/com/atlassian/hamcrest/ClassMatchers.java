@@ -35,35 +35,4 @@ public final class ClassMatchers
         }
     }
 
-    /**
-     * Returns a {@code Matcher} which will match any class that is assignable to the given type.
-     * 
-     * @param to type that must be assignable to
-     * @return {@code Matcher} which will match any class that is assignable to the given type
-     */
-    public static final Matcher<Class<?>> isAssignableTo(final Class<?> to)
-    {
-        return new IsAssignableTo(to);
-    };
-    
-    private static final class IsAssignableTo extends TypeSafeMatcher<Class<?>>
-    {
-        private final Class<?> to;
-
-        public IsAssignableTo(Class<?> to)
-        {
-            this.to = to;
-        }
-
-        @Override
-        protected boolean matchesSafely(Class<?> c)
-        {
-            return to.isAssignableFrom(c);
-        }
-
-        public void describeTo(Description description)
-        {
-            description.appendText("is assignable to ").appendValue(to);
-        }
-    }
 }

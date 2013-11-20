@@ -39,12 +39,12 @@ import com.google.common.collect.ImmutableMap;
  * <p>As an example of how this works, you can register a {@code MatcherFactory} which will be used when the field type
  * is a {@link java.security.Key}.  For this example, we really want a type matcher that checks if the type of the value
  * implements the {@code Key} interface, because it will never match exactly.  To do that, we'll use the 
- * {@link ClassMatchers#isAssignableTo(Class)} matcher and we'll say we want keys to match exactly using the in-built
+ * {@link Matchers#typeCompatibleWith(Class)} matcher and we'll say we want keys to match exactly using the in-built
  * {@link MatcherFactories#isEqual()} {@code MatcherFactory}.
  * 
  * <pre><code>
  *     Map<Matcher<Class<?>>, MatcherFactory> matcherFactories = new HashMap<Matcher<Class<?>>, MatcherFactory>();
- *     matcherFactories.put(isAssignableTo(Key.class), isEqual());
+ *     matcherFactories.put(typeCompatibleWith(Key.class), isEqual());
  *     assertThat(actualValue, is(deeplyEqualTo(expectedValue, matcherFactories)));
  * </code></pre>
  * 

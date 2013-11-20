@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 
 import java.util.List;
 import java.util.Map;
@@ -43,9 +44,9 @@ public final class MatcherFactories
     public static Map<Matcher<Class<?>>, MatcherFactory> collectionHandlingMatcherFactories()
     {
         Map<Matcher<Class<?>>, MatcherFactory> factories = Maps.newHashMap();
-        factories.put(ClassMatchers.isAssignableTo(Set.class), setIsDeeplyEqual());
-        factories.put(ClassMatchers.isAssignableTo(List.class), listIsDeeplyEqual());
-        factories.put(ClassMatchers.isAssignableTo(Map.class), mapIsDeeplyEqual());
+        factories.put(Matchers.typeCompatibleWith(Set.class), setIsDeeplyEqual());
+        factories.put(Matchers.typeCompatibleWith(List.class), listIsDeeplyEqual());
+        factories.put(Matchers.typeCompatibleWith(Map.class), mapIsDeeplyEqual());
         return factories;
     }
 
