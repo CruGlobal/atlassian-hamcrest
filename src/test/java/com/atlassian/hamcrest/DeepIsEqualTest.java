@@ -82,7 +82,18 @@ public class DeepIsEqualTest
             "  name is \"Two\"\n" +
             "}")));
     }
-    
+
+    @Test
+    public void assertThatDeepIsEqualDescribesExpectedObjectWithEnumFields()
+    {
+        Description description = new StringDescription().appendDescriptionOf(deeplyEqualTo(new EnumHolder(Color.BLUE)));
+        assertThat(description.toString(), is(equalTo(
+            "{\n" +
+            "  color is <BLUE>\n" +
+            "}")));
+    }
+
+
     @Test
     public void assertThatDeepIsEqualDescribesMismatchOfSimpleObjects()
     {
@@ -566,6 +577,22 @@ public class DeepIsEqualTest
         public StringsHolder(String... strings)
         {
             this.strings = strings;
+        }
+    }
+
+    enum Color
+    {
+        RED,
+        BLUE
+    }
+
+    static class EnumHolder
+    {
+        final Color color;
+
+        public EnumHolder(Color color)
+        {
+            this.color = color;
         }
     }
     

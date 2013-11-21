@@ -131,7 +131,7 @@ public class DeepIsEqual<T> extends DiagnosingMatcher<T>
     private static final class Primitives
     {
         /**
-         * {@code MatcherFactory}s to use for primitive types, arrays, and well-known value types.
+         * {@code MatcherFactory}s to use for primitive types, arrays, enums, and well-known value types.
          */
         private static final Map<Matcher<Class<?>>, MatcherFactory> FACTORIES = Collections.unmodifiableMap(
             new HashMap<Matcher<Class<?>>, MatcherFactory>()
@@ -148,6 +148,8 @@ public class DeepIsEqual<T> extends DiagnosingMatcher<T>
                 put(Matchers.<Class<?>>equalTo(String.class), isEqual());
                 put(Matchers.<Class<?>>equalTo(BigDecimal.class), isEqual());
                 put(Matchers.<Class<?>>equalTo(BigInteger.class), isEqual());
+
+                put(Matchers.typeCompatibleWith(Enum.class), isEqual());
 
                 put(isArray(), new ArrayEqualFactory());
             }}
